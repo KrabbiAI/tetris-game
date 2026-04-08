@@ -2,44 +2,12 @@
 
 **Fully playable React 19 Tetris with touch controls, 8-bit music, and level progression.**
 
-## What This Does
-
-Touch-friendly Tetris with ghost pieces, scoring, level system, and a win screen after clearing 1 line. Built with React + TypeScript + Zustand + Framer Motion.
-
 **Live:** https://guileless-cascaron-a46017.netlify.app
+**GitHub:** https://github.com/KrabbiAI/tetris-game
 
-## Restore from Scratch
+## Was Es Macht
 
-```bash
-# Requires: Node.js 18+
-node --version  # must be >= 18
-
-cd /home/dobby/tetris-game
-
-# Install dependencies
-npm install
-
-# Start dev server
-npm run dev
-
-# Production build
-npm run build
-```
-
-## Deploy to Netlify
-
-```bash
-# Netlify CLI
-npm install -g netlify-cli
-
-# Deploy (from tetris-game directory)
-netlify deploy --prod
-```
-
-Or connect the GitHub repo to Netlify for automatic deploys:
-```
-https://github.com/KrabbiAI/tetris-game
-```
+Touch-friendly Tetris mit ghost pieces, scoring, level system, und win screen nach 1 line clear. Built mit React + TypeScript + Zustand + Framer Motion.
 
 ## Tech Stack
 
@@ -53,7 +21,80 @@ https://github.com/KrabbiAI/tetris-game
 | vite | ^8.0.1 | Build tool |
 | howler | ^2.2.4 | 8-bit audio |
 
-## Project Structure
+## Restore from Scratch
+
+### 1. System Requirements
+
+```bash
+node --version  # must be >= 18
+npm --version
+```
+
+### 2. Dependencies
+
+```bash
+cd /home/dobby/tetris-game
+npm install
+```
+
+### 3. Environment Variables
+
+Keine Environment Variables benötigt.
+
+## Local Development
+
+```bash
+cd /home/dobby/tetris-game
+npm run dev      # Dev server
+npm run build    # Production build
+npm run preview  # Preview production build
+```
+
+## Deploy to Netlify
+
+```bash
+# Netlify CLI
+npm install -g netlify-cli
+
+# Deploy
+cd /home/dobby/tetris-game
+netlify deploy --prod
+```
+
+**Oder:** GitHub repo mit Netlify verbinden für automatic deploys:
+```
+https://github.com/KrabbiAI/tetris-game
+```
+
+## Game Rules
+
+- **Board:** 10×20 grid
+- **Pieces:** 7 tetrominoes (I, O, T, S, Z, J, L)
+- **Ghost piece:** Shows landing position
+- **Win condition:** Clear 1 line
+- **Speed:** Level increases every 10 lines
+
+## Scoring
+
+| Clear | Points |
+|-------|--------|
+| Single | 100 |
+| Double | 300 |
+| Triple | 500 |
+| Tetris | 800 |
+
+## Controls
+
+| Action | Keyboard | Touch |
+|--------|----------|-------|
+| Move left | ← | Swipe left |
+| Move right | → | Swipe right |
+| Rotate | ↑ | Swipe up |
+| Soft drop | ↓ | Swipe down |
+| Hard drop | Space | Tap |
+| Pause | Escape | Tap pause |
+
+## Projekt Struktur
 
 ```
 tetris-game/
@@ -79,20 +120,60 @@ tetris-game/
     └── tetris-theme.mp3    # 8-bit background music
 ```
 
-## Controls
+## State Management (Zustand)
 
-| Action | Keyboard | Touch |
-|--------|----------|-------|
-| Move | ← → | Swipe |
-| Rotate | ↑ | Swipe up |
-| Soft Drop | ↓ | Swipe down |
-| Hard Drop | Space | Tap |
-| Pause | Escape | Tap pause |
+```typescript
+interface GameState {
+  board: (string | null)[][];
+  currentPiece: Piece;
+  nextPieces: Piece[];
+  score: number;
+  level: number;
+  lines: number;
+  gameStatus: 'idle' | 'playing' | 'paused' | 'won';
+  
+  // Actions
+  startGame: () => void;
+  pauseGame: () => void;
+  moveLeft: () => void;
+  moveRight: () => void;
+  rotate: () => void;
+  drop: () => void;
+  // ...
+}
+```
 
-## Game Rules
+## Audio
 
-- 10×20 board, 7 tetrominoes
-- Ghost piece shows landing position
-- Win condition: clear 1 line
-- Level increases speed every 10 lines
-- Score: single=100, double=300, triple=500, tetris=800
+- Background music via `howler.js` (tetris-theme.mp3)
+- Sound effects für piece lock, line clear, etc.
+- Audio wird geladen beim ersten user interaction (Browser policy)
+
+## Troubleshooting
+
+**Touch controls funktionieren nicht:**
+- `onTouchStart`/`onTouchEnd` statt `onClick` für mobile
+- `preventDefault()` bei touch events für scroll prevention
+
+**Game läuft nicht smooth:**
+- `requestAnimationFrame` für game loop
+- React 19 mit concurrent features kann rendering optimieren
+
+**Audio startet nicht:**
+- Browser policy: Audio braucht user interaction
+- AudioContext resume() nach interaction
+
+## Verify Installation
+
+```bash
+npm run build  # Muss ohne errors
+npm run lint   # Keine TypeScript errors
+```
+
+## API Endpoints
+
+Keine Backend API — reines frontend.
+
+## Deployment
+
+Netlify automatic deploys via GitHub integration.
